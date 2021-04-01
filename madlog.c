@@ -11,6 +11,7 @@
 #endif
 
 #define BUFSIZE 128
+#define infinite for(;;)  
 
 char * fetch_output(char *command);
 int get_active_container();
@@ -26,7 +27,7 @@ int main(int argc, char **argv)
 }
 
 int get_active_container(){
-	do  
+	infinite
 	{  
 		char * returned_str = fetch_output("docker ps -q");
 		char* pch = NULL;
@@ -49,7 +50,7 @@ int get_active_container(){
 			sleep(2);
 		#endif
 
-	}while(1);  
+	} 
 
 	return 0;
 }
