@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #ifdef linux
 #include <unistd.h>
@@ -50,8 +51,8 @@ int get_active_container(){
 			sleep(2);
 		#endif
 
-	} 
-
+	}
+	printf("Oh dear, something went wrong or exit! %s\n", strerror(errno));
 	return 0;
 }
 
@@ -70,7 +71,10 @@ char * fetch_output(char *command){
     while (fgets(buf, BUFSIZE, fp) != NULL) {
 		strcat(output, buf);
     }
-	pclose(fp);
+	if (fp != NULL)
+    {
+		pclose(fp);
+	}
     return output;
 }
 
