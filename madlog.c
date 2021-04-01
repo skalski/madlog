@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 int get_active_container(){
 	do  
 	{  
-		char * returned_str = fetch_output("sudo docker ps -q");
+		char * returned_str = fetch_output("docker ps -q");
 		char* pch = NULL;
 
 		if(strlen(returned_str) == 0){
@@ -73,7 +73,7 @@ char * fetch_output(char *command){
 }
 
 void dispatch_exceptions_frm_dckr(char *container_id){
-	char * docker_cmd = "sudo docker logs --since=2s ";
+	char * docker_cmd = "docker logs --since=2s ";
 	char * command = malloc (strlen (docker_cmd) + strlen (container_id) + 1);;
 
 	strcat(command, docker_cmd);
