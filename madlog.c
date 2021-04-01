@@ -42,7 +42,13 @@ int get_active_container(){
 			dispatch_exceptions_frm_dckr(pch);
 			pch = strtok(NULL, "\n");
 		}
-		sleep(2);
+		#ifdef _WIN32
+			Sleep(2000);
+		#endif
+		#ifdef linux
+			sleep(2);
+		#endif
+
 	}while(1);  
 
 	return 0;
