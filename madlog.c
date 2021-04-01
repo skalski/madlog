@@ -70,6 +70,7 @@ char * fetch_output(char *command){
     while (fgets(buf, BUFSIZE, fp) != NULL) {
 		strcat(output, buf);
     }
+	pclose(fp);
     return output;
 }
 
@@ -86,7 +87,6 @@ void dispatch_exceptions_frm_dckr(char *container_id){
 	else if (strstr(returned_str, "stacktrace") != NULL)
 		output_trace(returned_str, container_id, "error");
 	
-	printf("%s", returned_str);
 	return;
 }
 
