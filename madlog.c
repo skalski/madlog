@@ -26,17 +26,17 @@ int main(int argc, char **argv)
 }
 
 int get_active_container(){
-	char * returned_str = fetch_output("docker ps -q");
-	char* pch = NULL;
-
-	if(strlen(returned_str) == 0){
-		printf("\n\nYour Docker is hidden or not available. Please make yourself a sudoer or reinstall docker.\n");
-		printf("Maybe your Docker has not started yet or has no active containers running.\n");
-		return 1;
-	}
-
 	do  
 	{  
+		char * returned_str = fetch_output("sudo docker ps -q");
+		char* pch = NULL;
+
+		if(strlen(returned_str) == 0){
+			printf("\n\nYour Docker is hidden or not available. Please make yourself a sudoer or reinstall docker.\n");
+			printf("Maybe your Docker has not started yet or has no active containers running.\n");
+			return 1;
+		}
+
 		pch = strtok(returned_str, "\r\n");
 		while (pch != NULL){
 			dispatch_exceptions_frm_dckr(pch);
@@ -67,7 +67,7 @@ char * fetch_output(char *command){
 }
 
 void dispatch_exceptions_frm_dckr(char *container_id){
-	char * docker_cmd = "docker logs --since=2s ";
+	char * docker_cmd = "sudo docker logs --since=2s ";
 	char * command = malloc (strlen (docker_cmd) + strlen (container_id) + 1);;
 
 	strcat(command, docker_cmd);
