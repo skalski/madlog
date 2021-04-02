@@ -8,6 +8,7 @@
 #endif
 
 #ifdef _WIN32
+#define UNICODE
 #include <windows.h>
 #endif
 
