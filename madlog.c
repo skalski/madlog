@@ -124,7 +124,7 @@ void dispatch_exceptions_frm_dckr(char *container_id, char *arg){
 	strcat(log_command, arg);
 	strcat(log_command, docker_cmd);
 	strcat(log_command, container_id);
-
+	printf("%s \n", log_command);
 	print_log_output(log_command, container_id);
 	memset(log_command, 0, 100);
 }
