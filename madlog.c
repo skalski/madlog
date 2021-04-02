@@ -32,13 +32,19 @@ int main(int argc, char *argv[])
 
 int get_active_container(char *arg){
 	char * docker_cmd = " docker ps -q";
-	char * command = malloc(strlen (arg) + strlen (docker_cmd)  + 1);
+	#ifdef _WIN32
+	char * command[20];
+	#endif
 
+	#ifdef linux
+	char * command = malloc(strlen (arg) + strlen (docker_cmd)  + 1);
+	#endif
 	strcat(command, arg);
 	strcat(command, docker_cmd);
 
 	char * returned_str = fetch_output(command);
 	printf("%s \n", returned_str);
+	memset(command, 0, 20);
 
 	infinite
 	{
