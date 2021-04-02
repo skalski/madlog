@@ -10,6 +10,7 @@
 #ifdef _WIN32
 #define UNICODE
 #include <windows.h>
+#include <locale.h>
 #endif
 
 #define BUFSIZE 256
@@ -22,13 +23,16 @@ void print_log_output(char *command, char *container_id);
 
 int main(int argc, char *argv[])
 {
-    printf("--- Start MadLog ---\n");
+	#ifdef _WIN32
+	SetConsoleOutputCP(65001);
+	#endif
+	printf("--- Start MadLog ---\n");
 	printf("Written by S. Kalski\n\n\n");
 	if(argv[1] == NULL)
 		get_active_container("");
 	else
 		get_active_container(argv[1]);
-    return 0;
+	return 0;
 }
 
 int get_active_container(char *arg){
