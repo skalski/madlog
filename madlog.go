@@ -15,11 +15,7 @@ var version string = "0.2"
 func main() {
 	WelcomeMsg()
 	SetLoglevel()
-	out, err := exec.Command("docker", "ps", "-q").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-	container_ids := strings.Split(strings.ReplaceAll(BytesToString(out), "\r\n", "\n"), "\n")
+	container_ids := FecthContainerIds()
 	for i, s := range container_ids {
 		if s != "" {
 			fmt.Printf("Found container %d: %s \n", i, s)
@@ -45,11 +41,12 @@ func StartLogFetcher(container_ids []string) {
 				}
 				log := BytesToString(out)
 				if log != "" {
-					ParseMessageByLevel(i, s)
+					ParseMessageByLevel(i, log)
 				}
 			}
 		}
 		time.Sleep(2 * time.Second)
+		container_ids = FecthContainerIds()
 	}
 }
 
@@ -79,4 +76,19 @@ func WelcomeMsg() {
 	fmt.Println("     --- Madlog ---")
 	fmt.Printf("      version:%s\n", version)
 	fmt.Print(" written by Swen Kalski\n\n\n")
+}
+
+func FecthContainerIds() []string {
+	var returnIds []string
+	out, err := exec.Command("docker", "ps", "-q").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	container_ids := strings.Split(strings.ReplaceAll(BytesToString(out), "\r\n", "\n"), "\n")
+	for _, s := range container_ids {
+		if s != "" {
+			returnIds = append(returnIds, s)
+		}
+	}
+	return returnIds
 }
