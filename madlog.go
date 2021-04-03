@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os/exec"
@@ -8,9 +9,12 @@ import (
 	"time"
 )
 
+var loglevel *int
+var version string = "0.2"
+
 func main() {
 	WelcomeMsg()
-
+	SetLoglevel()
 	out, err := exec.Command("docker", "ps", "-q").Output()
 	if err != nil {
 		log.Fatal(err)
@@ -25,6 +29,12 @@ func main() {
 	StartLogFetcher(container_ids)
 }
 
+func SetLoglevel() {
+	loglevel = flag.Int("level", 0, "set loglevel\n0 : ALL\n1 : ERROR/EXCEPTION")
+	flag.Parse()
+	fmt.Printf("set loglevel to: %d \n", *loglevel)
+}
+
 func StartLogFetcher(container_ids []string) {
 	for {
 		for i, s := range container_ids {
@@ -35,8 +45,7 @@ func StartLogFetcher(container_ids []string) {
 				}
 				log := BytesToString(out)
 				if log != "" {
-					fmt.Printf("LOG %d:%s \n", i, s)
-					fmt.Print(log)
+					ParseMessageByLevel(i, s)
 				}
 			}
 		}
@@ -44,11 +53,30 @@ func StartLogFetcher(container_ids []string) {
 	}
 }
 
+func ParseMessageByLevel(i int, log string) {
+	if *loglevel == 0 {
+		PrintLog(i, log)
+	}
+	if *loglevel == 1 && HasError(log) {
+		PrintLog(i, log)
+	}
+}
+
+func PrintLog(i int, log string) {
+	fmt.Printf("LOG %d:%s \n", i, log)
+	fmt.Print(log)
+}
+
 func BytesToString(data []byte) string {
 	return string(data[:])
 }
 
+func HasError(log string) bool {
+	return strings.Contains(strings.ToLower(log), "stacktrace") || strings.Contains(strings.ToLower(log), "error")
+}
+
 func WelcomeMsg() {
 	fmt.Println("     --- Madlog ---")
+	fmt.Printf("      version:%s\n", version)
 	fmt.Print(" written by Swen Kalski\n\n\n")
 }
