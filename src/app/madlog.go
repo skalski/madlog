@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"madlog/logoutput"
 	"os/exec"
 	"strings"
 	"time"
@@ -15,14 +16,14 @@ var version string = "0.2"
 func main() {
 	WelcomeMsg()
 	SetLoglevel()
-	container_ids := FecthContainerIds()
-	for i, s := range container_ids {
+	containerIds := FetchContainerIds()
+	for i, s := range containerIds {
 		if s != "" {
 			fmt.Printf("Found container %d: %s \n", i, s)
 		}
 	}
 	fmt.Println("Start log output ....")
-	StartLogFetcher(container_ids)
+	StartLogFetcher(containerIds)
 }
 
 func SetLoglevel() {
@@ -31,45 +32,27 @@ func SetLoglevel() {
 	fmt.Printf("set loglevel to: %d \n", *loglevel)
 }
 
-func StartLogFetcher(container_ids []string) {
+func StartLogFetcher(containerIds []string) {
 	for {
-		for i, s := range container_ids {
+		for i, s := range containerIds {
 			if s != "" {
 				out, err := exec.Command("docker", "logs", "--since=2s", s).Output()
 				if err != nil {
 					log.Fatal(err)
 				}
-				log := BytesToString(out)
-				if log != "" {
-					ParseMessageByLevel(i, log)
+				logOutput := BytesToString(out)
+				if logOutput != "" {
+					logoutput.ParseMessageByLevel(i, logOutput, loglevel)
 				}
 			}
 		}
 		time.Sleep(2 * time.Second)
-		container_ids = FecthContainerIds()
+		containerIds = FetchContainerIds()
 	}
-}
-
-func ParseMessageByLevel(i int, log string) {
-	if *loglevel == 0 {
-		PrintLog(i, log)
-	}
-	if *loglevel == 1 && HasError(log) {
-		PrintLog(i, log)
-	}
-}
-
-func PrintLog(i int, log string) {
-	fmt.Printf("LOG %d:%s \n", i, log)
-	fmt.Print(log)
 }
 
 func BytesToString(data []byte) string {
 	return string(data[:])
-}
-
-func HasError(log string) bool {
-	return strings.Contains(strings.ToLower(log), "stacktrace") || strings.Contains(strings.ToLower(log), "error")
 }
 
 func WelcomeMsg() {
@@ -78,14 +61,14 @@ func WelcomeMsg() {
 	fmt.Print(" written by Swen Kalski\n\n\n")
 }
 
-func FecthContainerIds() []string {
+func FetchContainerIds() []string {
 	var returnIds []string
 	out, err := exec.Command("docker", "ps", "-q").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	container_ids := strings.Split(strings.ReplaceAll(BytesToString(out), "\r\n", "\n"), "\n")
-	for _, s := range container_ids {
+	containerIds := strings.Split(strings.ReplaceAll(BytesToString(out), "\r\n", "\n"), "\n")
+	for _, s := range containerIds {
 		if s != "" {
 			returnIds = append(returnIds, s)
 		}
