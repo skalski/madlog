@@ -1,5 +1,6 @@
 # madlog
 summarizes stacktraces and error-logs from all running Docker containers.
+
 [![Go](https://github.com/skalski/madlog/actions/workflows/go.yml/badge.svg)](https://github.com/skalski/madlog/actions/workflows/go.yml)
 
 
