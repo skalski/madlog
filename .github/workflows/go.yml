@@ -22,4 +22,4 @@ jobs:
       run: cd src/app/ && go build -v madlog.go
 
     - name: Test
-      run: go test -v madlog.go
+      run: cd src/app/ && go test -v ./...
